@@ -58,7 +58,7 @@
      <div class="filter-bar">
       <div>
        <div class="input-group">
-        <input type="text" class="form-control" placeholder="Название города">
+        <input type="text" id="citySearch" class="form-control" placeholder="Название города">
         <div class="input-group-append">
          <button class="btn btn-outline-secondary" type="button" id="button-addon2">Искать</button>
         </div>
@@ -67,52 +67,8 @@
      </div>
 
      <section class="lattest-product-area pb-40 category-list">
-      <div class="row">
-        <div class="card text-center card-product">
-         <div class="card-product__img">
-          <img class="card-img" src="https://placeimg.com/255/255/nature" alt="">
-         </div>
-         <div class="card-body">
-          <p>Россия</p>
-          <h4 class="card-product__title">Сочи</h4>
-          <p class="card-product__price">200 000 руб</p>
-          <p><button type="button" class="btn btn-primary">Заказать</button></p>
-         </div>
-        </div>
-         <div class="card text-center card-product">
-          <div class="card-product__img">
-           <img class="card-img" src="https://placeimg.com/255/255/nature?2" alt="">
-          </div>
-          <div class="card-body">
-           <p>Франция</p>
-           <h4 class="card-product__title">Париж</h4>
-           <p class="card-product__price">150 000 руб</p>
-           <p><button type="button" class="btn btn-danger">Отмена</button></p>
-          </div>
-         </div>
-         <div class="card text-center card-product">
-          <div class="card-product__img">
-           <img class="card-img" src="https://placeimg.com/255/255/nature?3" alt="">
-          </div>
-          <div class="card-body">
-           <p>Тайланд</p>
-           <h4 class="card-product__title">Бангкок</h4>
-           <p class="card-product__price">50 000 руб</p>
-           <p><button type="button" class="btn btn-primary">Заказать</button></p>
-          </div>
-         </div>
-        <div class="card text-center card-product">
-         <div class="card-product__img">
-          <img class="card-img" src="https://placeimg.com/255/255/nature?4" alt="">
-         </div>
-         <div class="card-body">
-          <p>Тайланд</p>
-          <h4 class="card-product__title">Пхукет</h4>
-          <p class="card-product__price">60 000 руб</p>
-          <p><button type="button" class="btn btn-primary">Заказать</button></p>
-         </div>
-        </div>
-       </div>
+      <div id="productsDiv" class="row">
+      </div>
      </section>
 
     </div>
