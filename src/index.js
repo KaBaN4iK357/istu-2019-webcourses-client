@@ -22,17 +22,24 @@ for (let i = 0; i < products.length; i++) {
   dict.push(new CityButtonId(products[i].city, i));
 }
 
-let purchases = new Set();
+let purchases = [];
 class Purchase {
   constructor(city, price) {
     this.city = city;
     this.price = price;
-    if (!purchases.has(city)) {
-      this.count = 1;
-    } else {
-      this.count++;
-    }
-    this.Total = this.count * price;
+    this.count = 1;
+  }
+
+  getTotal() {
+    return this.count * this.price;
+  }
+}
+function addPurshase(product) {
+  let purchase = purchases.find((p) => p.city === product.city);
+  if (purchase !== undefined) {
+    purchase.count++;
+  } else {
+    purchases.push(new Purchase(product.city, product.price));
   }
 }
 
@@ -110,7 +117,7 @@ function refreshPage() {
   let c = filterProductsByCountry(state.prods, state.countryFilter);
   let result = filterProductsByCity(c, state.cityFilter);
   pasteProductsInHTML(result);
-  setButtonsPurshaseEvent(result);
+  setButtonsPurchaseEvent(result);
 }
 document.getElementById(`button-addon2`).onclick = ()=>{
   let rb = document.querySelector(`input[name=country]:checked`);
@@ -122,24 +129,145 @@ document.getElementById(`button-addon2`).onclick = ()=>{
   refreshPage();
 };
 
-function makePurshase(button) {
+function makePurchase(button) {
   let city = dict.find((obj) => obj.bID === Number(button.id.split(`-`)[1])).city;
   let prod = products.find((p) => p.city === city);
   let icart = document.getElementById(`index-cart`);
-  purchases.add(new Purchase(prod.city, prod.price));
-  icart.innerText = purchases.size;
+  addPurshase(prod);
+  icart.innerText = purchases.reduce((acc, x) => acc + x.count, 0);
   /* icart.innerText = `${prod.price}`; */
 }
-function setButtonsPurshaseEvent(array) {
+function setButtonsPurchaseEvent(array) {
   for (let i = 0; i < array.length; i++) {
     let ind = dict.find((obj) => obj.city === array[i].city).bID;
     let button = document.getElementById(`button-${ind}`);
-    button.onclick = () => makePurshase(button);
+    button.onclick = () => makePurchase(button);
   }
 }
 
+function deletePurchase(pID) {
+  purchases.splice(pID, 1);
+}
+function setButtonsDeletePurchaseEvent(array) {
+  for (let i = 0; i < array.length; i++) {
+    let button = document.getElementById(`del-${i + 1}`);
+    button.onclick = () => {
+      deletePurchase(i);
+      generateDoc();
+    };
+  }
+}
+
+function changeAmount(pID) {
+  let purchase = purchases[pID];
+  let value = document.getElementById(`change-${pID + 1}`).value;
+  purchase.count = Number(value);
+}
+function setButtonsChangeAmountPurchaseEvent(array) {
+  for (let i = 0; i < array.length; i++) {
+    let button = document.getElementById(`change-${i + 1}`);
+    button.onclick = () => {
+      changeAmount(i);
+      generateDoc();
+    };
+  }
+}
+
+function generateTable() {
+  let rows = [];
+  rows.push(`<table class="table">
+    <thead>
+    <tr>
+     <th scope="col">№</th>
+     <th scope="col">Путевка</th>
+     <th scope="col">Стоимость</th>
+     <th scope="col">Кол-во</th>
+     <th scope="col">Сумма</th>
+     <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>`);
+  for (let i = 0; i < purchases.length; i++) {
+    rows.push(generateTableRow(i + 1, purchases[i]));
+  }
+  rows.push(generateTableBottom(purchases));
+  rows.push(`</tbody></table>`);
+  return rows.join(``);
+}
+function generateTableRow(pID, purchase) {
+  return `<tr>
+     <th scope="row">${pID}</th>
+     <td>${purchase.city}</td>
+     <td>${purchase.price} руб</td>
+     <td><input type="number" id="change-${pID}" class="form-control cart-number" value="${purchase.count}" min="1"></td>
+     <td>${purchase.getTotal()} руб</td>
+     <td><button type="button" id="del-${pID}" class="btn btn-danger">Удалить</button></td>
+    </tr>`;
+}
+function generateTableBottom() {
+  return `<tr>
+     <th scope="row" colspan="3">&nbsp;</th>
+     <td><b>Итого:</b></td>
+     <td>${purchases.reduce((acc, x) => acc + x.getTotal(), 0)} руб</td>
+     <td>&nbsp;</td>
+    </tr>`;
+}
+
+let cartButton = document.getElementById(`cart-reference`);
+function generateDoc() {
+  let win1 = window.open(``, `Scriptic`);
+  win1.document.open(); // Открываем его.
+  let purchasesCount = purchases.reduce((acc, x) => acc + x.count, 0);
+  win1.document.write(`<!doctype html>
+<html>
+ <head>
+   <title>Путевки онлайн</title>
+   <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css" />
+   <link rel="stylesheet" type="text/css" href="./css/main.css" />
+ </head>
+ <body>
+  <header class="site-header">
+   <div class="main_menu">
+    <nav class="navbar navbar-expand-lg navbar-light">
+     <div class="container">
+      <a class="navbar-brand site-header-logo" href="/">Путевки онлайн</a>
+
+      <button type="button" class="btn btn-primary">
+       Корзина <span class="badge badge-light" id = "cart">${purchasesCount}</span>
+      </button>
+     </div>
+    </nav>
+   </div>
+  </header>
+
+ <section class="site-main mb-5">
+  <div class="container">
+  ${generateTable()}
+  </div>
+ </section>
+
+ <footer>
+  <div class="footer-bottom">
+   <div class="container">
+    <div class="row d-flex">
+     <p class="col-lg-12 footer-text text-center">
+      Copyright ©2019
+    </div>
+   </div>
+  </div>
+ </footer>
+
+ <script src="main.js"></script>
+  <script src="cart.js"></script>
+ </body>
+</html>`
+  );
+  setButtonsDeletePurchaseEvent(purchases);
+  setButtonsChangeAmountPurchaseEvent(purchases);
+  window.focus();	// Переводим фокус.
+}
+cartButton.onclick = generateDoc;
+
 pasteProductsInHTML(products);
 pasteNavigationsInHTML();
-setButtonsPurshaseEvent(products);
-
-
+setButtonsPurchaseEvent(products);
