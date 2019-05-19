@@ -118,6 +118,11 @@ function refreshPage() {
   let result = filterProductsByCity(c, state.cityFilter);
   pasteProductsInHTML(result);
   setButtonsPurchaseEvent(result);
+  refreshCartText();
+}
+function refreshCartText() {
+  let icart = document.getElementById(`index-cart`);
+  icart.innerText = purchases.reduce((acc, x) => acc + x.count, 0);
 }
 document.getElementById(`button-addon2`).onclick = ()=>{
   let rb = document.querySelector(`input[name=country]:checked`);
@@ -148,9 +153,9 @@ function setButtonsPurchaseEvent(array) {
 function deletePurchase(pID) {
   purchases.splice(pID, 1);
 }
-function setButtonsDeletePurchaseEvent(array) {
+function setButtonsDeletePurchaseEvent(array, window) {
   for (let i = 0; i < array.length; i++) {
-    let button = document.getElementById(`del-${i + 1}`);
+    let button = window.document.getElementById(`del-${i + 1}`);
     button.onclick = () => {
       deletePurchase(i);
       generateDoc();
@@ -158,16 +163,16 @@ function setButtonsDeletePurchaseEvent(array) {
   }
 }
 
-function changeAmount(pID) {
+function changeAmount(pID, window) {
   let purchase = purchases[pID];
-  let value = document.getElementById(`change-${pID + 1}`).value;
+  let value = window.document.getElementById(`change-${pID + 1}`).value;
   purchase.count = Number(value);
 }
-function setButtonsChangeAmountPurchaseEvent(array) {
+function setButtonsChangeAmountPurchaseEvent(array, window) {
   for (let i = 0; i < array.length; i++) {
-    let button = document.getElementById(`change-${i + 1}`);
+    let button = window.document.getElementById(`change-${i + 1}`);
     button.onclick = () => {
-      changeAmount(i);
+      changeAmount(i, window);
       generateDoc();
     };
   }
@@ -215,7 +220,7 @@ function generateTableBottom() {
 
 let cartButton = document.getElementById(`cart-reference`);
 function generateDoc() {
-  let win1 = window.open(``, `Scriptic`);
+  let win1 = window.open(`?`, `_self`);
   win1.document.open(); // Открываем его.
   let purchasesCount = purchases.reduce((acc, x) => acc + x.count, 0);
   win1.document.write(`<!doctype html>
@@ -262,8 +267,8 @@ function generateDoc() {
  </body>
 </html>`
   );
-  setButtonsDeletePurchaseEvent(purchases);
-  setButtonsChangeAmountPurchaseEvent(purchases);
+  setButtonsDeletePurchaseEvent(purchases, win1);
+  setButtonsChangeAmountPurchaseEvent(purchases, win1);
   window.focus();	// Переводим фокус.
 }
 cartButton.onclick = generateDoc;
@@ -271,3 +276,5 @@ cartButton.onclick = generateDoc;
 pasteProductsInHTML(products);
 pasteNavigationsInHTML();
 setButtonsPurchaseEvent(products);
+refreshCartText();
+
