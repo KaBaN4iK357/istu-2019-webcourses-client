@@ -167,13 +167,16 @@ function changeAmount(pID, window) {
   let purchase = purchases[pID];
   let value = window.document.getElementById(`change-${pID + 1}`).value;
   purchase.count = Number(value);
+  let subtotal = window.document.getElementById(`subtotal-${pID + 1}`);
+  subtotal.innerText = `${purchase.count * purchase.price} руб`;
+  let total = window.document.getElementById(`total`);
+  total.innerText = `${purchases.reduce((acc, x) => acc + x.getTotal(), 0)} руб`;
 }
 function setButtonsChangeAmountPurchaseEvent(array, window) {
   for (let i = 0; i < array.length; i++) {
     let button = window.document.getElementById(`change-${i + 1}`);
     button.onclick = () => {
       changeAmount(i, window);
-      generateDoc();
     };
   }
 }
@@ -205,7 +208,7 @@ function generateTableRow(pID, purchase) {
      <td>${purchase.city}</td>
      <td>${purchase.price} руб</td>
      <td><input type="number" id="change-${pID}" class="form-control cart-number" value="${purchase.count}" min="1"></td>
-     <td>${purchase.getTotal()} руб</td>
+     <td id="subtotal-${pID}">${purchase.getTotal()} руб</td>
      <td><button type="button" id="del-${pID}" class="btn btn-danger">Удалить</button></td>
     </tr>`;
 }
@@ -213,7 +216,7 @@ function generateTableBottom() {
   return `<tr>
      <th scope="row" colspan="3">&nbsp;</th>
      <td><b>Итого:</b></td>
-     <td>${purchases.reduce((acc, x) => acc + x.getTotal(), 0)} руб</td>
+     <td id="total">${purchases.reduce((acc, x) => acc + x.getTotal(), 0)} руб</td>
      <td>&nbsp;</td>
     </tr>`;
 }
