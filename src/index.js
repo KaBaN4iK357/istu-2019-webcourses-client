@@ -140,7 +140,6 @@ function makePurchase(button) {
   let icart = document.getElementById(`index-cart`);
   addPurshase(prod);
   icart.innerText = purchases.reduce((acc, x) => acc + x.count, 0);
-  /* icart.innerText = `${prod.price}`; */
 }
 function setButtonsPurchaseEvent(array) {
   for (let i = 0; i < array.length; i++) {
@@ -158,6 +157,7 @@ function setButtonsDeletePurchaseEvent(array, window) {
     let button = window.document.getElementById(`del-${i + 1}`);
     button.onclick = () => {
       deletePurchase(i);
+      window.close();
       generateDoc();
     };
   }
@@ -183,7 +183,7 @@ function setButtonsChangeAmountPurchaseEvent(array, window) {
 
 function generateTable() {
   let rows = [];
-  rows.push(`<table class="table">
+  rows.push(`<table id = "mytable" class="table">
     <thead>
     <tr>
      <th scope="col">№</th>
@@ -223,7 +223,7 @@ function generateTableBottom() {
 
 let cartButton = document.getElementById(`cart-reference`);
 function generateDoc() {
-  let win1 = window.open(`?`, `_self`);
+  let win1 = window.open(``, ``);
   win1.document.open(); // Открываем его.
   let purchasesCount = purchases.reduce((acc, x) => acc + x.count, 0);
   win1.document.write(`<!doctype html>
